@@ -1,0 +1,50 @@
+---
+const trajectory = ['Biology', 'Environmental science', 'Spatial modelling', 'Biodiversity forecasting', 'Geospatial intelligence', 'AI + decision systems'];
+const roles = [
+  { org: 'Labelbox / Alignerr', title: 'Environmental Management Scientist (AI training)', when: 'Jan 2026 – present', where: 'Remote', what: 'Evaluating AI-generated environmental-management and sustainability content — land-use planning, impact mitigation, decision outputs — against real-world frameworks.' },
+  { org: 'Floresta Bem Cuidada, Lda.', title: 'GIS Analyst', when: 'Feb 2025 – Sep 2026', where: 'Guarda, Portugal · hybrid', what: 'GIS & remote sensing for forest planning; dashboards and apps (R Shiny, Power BI, PowerApps, QGIS); ODT work-order system; Monday.com rollout; NIS 2 compliance with Pontual IT; website redevelopment; training colleagues.' },
+  { org: 'Vrije Universiteit Amsterdam', title: 'Junior Researcher', when: 'Nov 2023 – Feb 2025', where: 'Amsterdam · hybrid', what: 'NaturaConnect, Swiss Re Foundation and SIPATH projects: nested SDMs for 10,000+ species, CLUMondo land-use scenarios, climate/SSP integration, biodiversity forecasts for ~1,200 European species.' },
+  { org: 'MontObEO', title: 'Research Assistant · postgraduate', when: 'Dec 2021 – Oct 2023', where: 'Porto / Montesinho · hybrid', what: 'R Shiny biodiversity WebGIS for the Montesinho/Nogueira SAC, SDMs, environmental assessments, workshops with 40+ stakeholders.' },
+  { org: 'ANEPC — Autoridade Nacional de Emergência e Proteção Civil', title: 'Logistics & telecommunications operator (seasonal)', when: 'Summers 2020 & 2021', where: 'Castelo Branco', what: 'Operational support for emergency response — logistics and telecommunications during peak fire season.' },
+];
+---
+<section class="section" id="experience" aria-labelledby="exp-title">
+  <div class="container">
+    <header class="section-head">
+      <span class="index">Experience</span>
+      <h2 id="exp-title">Each stage built the next</h2>
+      <p class="lede">A biologist who learned to model, a modeller who learned to ship tools, and a tool-builder who now works on what the decision needs.</p>
+    </header>
+
+    <ol class="traj" aria-label="Professional trajectory">
+      {trajectory.map((t, i) => <li><span class="traj-dot" aria-hidden="true"></span><span>{t}</span></li>)}
+    </ol>
+
+    <ol class="roles">
+      {roles.map((r) => (
+        <li class="role">
+          <div class="role-when mono">{r.when}<span>{r.where}</span></div>
+          <div class="role-body">
+            <h3>{r.title}</h3>
+            <div class="role-org">{r.org}</div>
+            <p>{r.what}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+<style>
+  .traj { list-style: none; margin: 0 0 3rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.75rem 0; align-items: center; }
+  .traj li { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-display); font-weight: 500; font-size: var(--fs-sm); }
+  .traj li + li::before { content: ''; width: 34px; height: 1px; background: linear-gradient(90deg, var(--line-strong), var(--accent)); margin: 0 0.6rem; }
+  .traj-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--accent); }
+  .traj li:last-child .traj-dot { background: var(--accent); }
+  .roles { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .role { display: grid; grid-template-columns: 1fr; gap: 0.4rem 2.5rem; padding: 1.5rem 0; border-bottom: 1px solid var(--line); }
+  @media (min-width: 800px) { .role { grid-template-columns: 200px 1fr; } }
+  .role-when { color: var(--muted); font-size: var(--fs-xs); display: grid; gap: 0.2rem; align-content: start; }
+  .role h3 { margin: 0 0 0.1rem; font-size: var(--fs-md); }
+  .role-org { color: var(--accent); font-size: var(--fs-sm); font-weight: 500; margin-bottom: 0.5rem; }
+  .role p { margin: 0; color: var(--text-2); font-size: var(--fs-sm); }
+</style>

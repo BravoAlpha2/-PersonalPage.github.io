@@ -1,0 +1,20 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectCard from './ProjectCard.astro';
+const projects = (await getCollection('projects', ({ data }) => data.featured)).sort((a, b) => a.data.order - b.data.order);
+---
+<section class="section" id="work" aria-labelledby="work-title">
+  <div class="container">
+    <header class="section-head">
+      <span class="index">Work</span>
+      <h1 id="work-title">Six problems, from a protected area to the whole of Europe</h1>
+      <p class="lede">Each case answers the same five questions: what the problem was, what data existed, what intelligence was built, with which technology, and what changed because of it.</p>
+    </header>
+    <div class="grid">
+      {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+    </div>
+  </div>
+</section>
+<style>
+  .grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+</style>

@@ -1,0 +1,29 @@
+---
+import { site } from '../config/site';
+import { url } from '../lib/url';
+---
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <span class="index mono">Contact</span>
+    <h2 id="contact-title">Let's build something useful from complex data.</h2>
+    <p class="lede">If you're working with geospatial data, environmental systems, Earth observation, predictive analytics or decision-support technology, I'd like to hear about the problem — not the job title.</p>
+    {site.availability.show && <p class="status mono"><span class={`dot ${site.availability.state}`} aria-hidden="true"></span>{site.availability.label}</p>}
+    <div class="actions">
+      <a class="btn btn-primary" href={`mailto:${site.links.email}?subject=${encodeURIComponent('A problem worth discussing')}`} data-track="Contact clicked" data-track-props='{"where":"contact"}'>Start a conversation</a>
+      <a class="btn btn-ghost" href={site.links.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-ghost" href={site.links.github} target="_blank" rel="noopener" data-track="GitHub clicked">GitHub</a>
+      {site.links.cv && <a class="btn btn-ghost" href={url(site.links.cv)} download data-track="CV downloaded">CV (PDF)</a>}
+    </div>
+    <p class="mono muted email">{site.links.email} · {site.location} · {site.timezone}</p>
+  </div>
+</section>
+<style>
+  .contact { padding-block: var(--section); }
+  .index { color: var(--accent); display: block; margin-bottom: 1rem; }
+  .contact h2 { font-size: clamp(2rem, 5vw, 3.4rem); max-width: 18ch; letter-spacing: -0.03em; }
+  .status { display: flex; align-items: center; gap: 0.5rem; color: var(--text-2); font-size: var(--fs-sm); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(46,196,182,.18); }
+  .dot.limited { background: var(--amber); box-shadow: 0 0 0 4px rgba(242,193,78,.18); } .dot.closed { background: var(--muted); box-shadow: none; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.6rem 0 1.25rem; }
+  .email { font-size: var(--fs-xs); }
+</style>

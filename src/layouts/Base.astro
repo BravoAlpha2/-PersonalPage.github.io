@@ -1,0 +1,102 @@
+---
+import '../styles/global.css';
+import { site } from '../config/site';
+import { url } from '../lib/url';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  /** Extra JSON-LD (e.g. CreativeWork on project pages) */
+  jsonLd?: Record<string, unknown>[];
+}
+const { title = site.title, description = site.description, image = site.ogImage, type = 'website', jsonLd = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(url(image), Astro.site).href;
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: Astro.site?.href,
+  jobTitle: 'Geospatial Data Scientist',
+  description: site.description,
+  address: { '@type': 'PostalAddress', addressLocality: 'Castelo Branco', addressCountry: 'PT' },
+  sameAs: [site.links.github, site.links.linkedin, site.links.researchgate].filter(Boolean),
+  knowsAbout: ['Geospatial intelligence', 'Earth observation', 'Species distribution models', 'Land-use modelling', 'Google Earth Engine', 'R Shiny'],
+};
+const a = site.analytics;
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#0f1318" />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={url('/sitemap-index.xml')} />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="en_GB" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+    {jsonLd.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+
+    {a.provider === 'plausible' && a.plausible.domain && <script defer data-domain={a.plausible.domain} src={a.plausible.scriptUrl}></script>}
+    {a.provider === 'umami' && a.umami.websiteId && <script defer data-website-id={a.umami.websiteId} src={a.umami.scriptUrl}></script>}
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      import { bindTracking } from '../lib/analytics';
+      bindTracking();
+
+      // Reveal-on-scroll (once). Kept tiny and only for elements that opt in.
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }),
+        { rootMargin: '0px 0px -10% 0px', threshold: 0.15 },
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // Easter egg for the console.
+      if (typeof console !== 'undefined') {
+        console.log('%cNUNO GARCIA\n%cGEOSPATIAL INTELLIGENCE\n\n%cData is more useful when it answers a decision.\n%chttps://github.com/BravoAlpha2',
+          'font:700 18px Space Grotesk,sans-serif;color:#ede8de', 'font:600 12px monospace;color:#2ec4b6', 'font:13px sans-serif;color:#b5bcc7', 'font:12px monospace;color:#8a94a3');
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .skip { position: absolute; left: -999px; top: 0.5rem; background: var(--accent); color: var(--accent-ink); padding: 0.5rem 0.8rem; border-radius: 4px; z-index: 100; font-weight: 600; text-decoration: none; }
+  .skip:focus { left: 0.5rem; }
+</style>

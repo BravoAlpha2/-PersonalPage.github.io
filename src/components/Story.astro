@@ -1,0 +1,163 @@
+---
+import { url } from '../lib/url';
+
+type Chapter = {
+  years: string; place: string; title: string; text: string;
+  number?: { value: number; prefix?: string; suffix?: string; label: string };
+  image?: { src: string; alt: string; paper?: boolean; fit?: 'cover' | 'contain'; pos?: string };
+  diagram?: 'workflow';
+  link?: { label: string; href: string };
+};
+const chapters: Chapter[] = [
+  { years: '2018 – 2021', place: 'Coimbra', title: 'It started with a simple question: where are the species?',
+    text: 'A biology degree at Coimbra, summers with the civil-protection authority in Castelo Branco, and a growing suspicion that the interesting problems were spatial.',
+    image: { src: '/images/montesinho-lizard.webp', alt: 'A green lizard photographed in Montesinho', fit: 'cover', pos: 'center' } },
+  { years: '2021 – 2023', place: 'Montesinho · Porto', title: 'A protected area gets its first open atlas.',
+    text: 'For the MontObEO project and my MSc thesis I compiled every available record for the Montesinho/Nogueira SAC, modelled the main taxonomic groups from satellite data in Google Earth Engine, and built an R Shiny WebGIS that ICNF, municipalities and local actors still use.',
+    number: { value: 1312, label: 'species mapped in the WebGIS' },
+    image: { src: '/images/montesinho-webgis.webp', alt: 'The Montesinho/Nogueira biodiversity WebGIS', fit: 'cover', pos: 'left top' },
+    link: { label: 'The biodiversity platform', href: '/work/montobeo-biodiversity-platform' } },
+  { years: '2024', place: 'The same mountains, from orbit', title: 'Twenty years of habitat change, read from satellites.',
+    text: 'As lead author, I turned satellite time-series into yearly niche models and asked whether species richness had been rising or falling since 2001. It had — in different directions in different parts of the park, and differently for each group.',
+    number: { value: 10190, label: 'species records behind the models' },
+    image: { src: '/images/montesinho-richness-panel.webp', alt: 'Trend in potential species richness across the Montesinho/Nogueira SAC', paper: true, fit: 'contain' },
+    link: { label: 'Reading habitat change from orbit', href: '/work/satellite-time-series' } },
+  { years: '2023 – 2025', place: 'Amsterdam', title: 'Then the map became Europe.',
+    text: 'At VU Amsterdam I worked on nested species distribution models for more than ten thousand species and CLUMondo land-use scenarios at one kilometre, feeding biodiversity forecasts for the NaturaConnect consortium and the Swiss Re Foundation. Along the way, a Google Earth Engine app made a One Earth finding explorable by anyone.',
+    number: { value: 10000, suffix: '+', label: 'species in the modelling framework' },
+    image: { src: '/images/europe-present.webp', alt: 'Modelled species suitability across Europe', paper: true, fit: 'contain' },
+    link: { label: 'Forecasting biodiversity futures', href: '/work/biodiversity-futures' } },
+  { years: '2025 – 2026', place: 'Guarda', title: 'Ground truth: a forestry company, a crew, a work order.',
+    text: 'Back in Portugal, the question changed from what will happen to what do we do tomorrow morning. Manual mapping became GIS workflows, spreadsheets became dashboards, and the work-order process got a template, an approval flow and a live view.',
+    number: { value: 40, prefix: '~', suffix: '%', label: 'less manual mapping time' },
+    diagram: 'workflow',
+    link: { label: 'GIS to operational intelligence', href: '/work/forestry-operational-intelligence' } },
+  { years: '2026 → now', place: 'Castelo Branco', title: 'Now: models, decisions, and the people who make them.',
+    text: 'I evaluate AI-generated environmental-management content for Labelbox/Alignerr, finished a business-management postgraduate at ISCTE, and take on problems where geospatial data has to become a decision. If you have one of those, let\u2019s talk.',
+    image: { src: '/images/nuno-garcia.webp', alt: 'Nuno Garcia', fit: 'cover', pos: 'center' },
+    link: { label: 'Start a conversation', href: '/#contact' } },
+];
+---
+<section class="story" id="story" aria-labelledby="story-title">
+  <div class="container">
+    <header class="story-head">
+      <h2 id="story-title">Eight years, one direction</h2>
+      <p class="lede">From a biology student who wanted to know where species live to the person who builds the tools that decide what to do about it.</p>
+    </header>
+  </div>
+
+  <div class="container chapters" data-story>
+    <svg class="route" aria-hidden="true" data-route preserveAspectRatio="none" viewBox="0 0 2 100">
+      <line class="route-bg" x1="1" y1="0" x2="1" y2="100" />
+      <line class="route-fg" x1="1" y1="0" x2="1" y2="100" pathLength="1" data-route-line />
+    </svg>
+    {chapters.map((c, i) => (
+      <article class="chapter" data-chapter style={`--i:${i}`}>
+        <div class="marker" aria-hidden="true"><span></span></div>
+        <div class="meta">
+          <span class="mono years">{c.years}</span>
+          <span class="mono place">{c.place}</span>
+        </div>
+        <div class="text">
+          <h3>{c.title}</h3>
+          <p>{c.text}</p>
+          {c.number && <p class="num"><strong data-count={c.number.value} data-prefix={c.number.prefix ?? ''} data-suffix={c.number.suffix ?? ''}>{c.number.prefix ?? ''}{c.number.value.toLocaleString('en-GB')}{c.number.suffix ?? ''}</strong><span>{c.number.label}</span></p>}
+          {c.link && <a class="more" href={url(c.link.href)}>{c.link.label}</a>}
+        </div>
+        <figure class:list={['visual', { paper: c.image?.paper, portrait: i === chapters.length - 1 }]}>
+          {c.image && <img src={url(c.image.src)} alt={c.image.alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" style={`object-fit:${c.image.fit ?? 'cover'};object-position:${c.image.pos ?? 'center'}`} />}
+          {c.diagram === 'workflow' && (
+            <svg viewBox="0 0 420 240" role="img" aria-label="Manual workflow replaced by a GIS-driven one">
+              <g class="d-old">{['Request', 'Hand-drawn map', 'Spreadsheet', 'Phone the crew'].map((t, j) => <g><rect x="24" y={22 + j * 44} width="160" height="30" rx="4" /><text x="104" y={42 + j * 44} text-anchor="middle">{t}</text></g>)}</g>
+              <path class="d-arrow" d="M196 108h28" />
+              <g class="d-new">{['Request logged', 'Parcel from GIS', 'ODT from template', 'Approval + crew', 'Live dashboard'].map((t, j) => <g><rect x="236" y={12 + j * 44} width="160" height="30" rx="4" /><text x="316" y={32 + j * 44} text-anchor="middle">{t}</text></g>)}</g>
+            </svg>
+          )}
+        </figure>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .story { padding-block: var(--section) 0; }
+  .story-head { max-width: 640px; margin-bottom: clamp(2.5rem, 6vw, 4.5rem); }
+  .story-head h2 { margin-bottom: 0.4em; }
+  .chapters { position: relative; padding-left: 2.25rem; }
+  .route { position: absolute; left: 0.6rem; top: 0; width: 2px; height: 100%; overflow: visible; }
+  .route-bg { stroke: var(--line); stroke-width: 2; }
+  .route-fg { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .chapter { position: relative; display: grid; gap: 1.25rem 3rem; padding-block: clamp(2.5rem, 6vw, 4.5rem); grid-template-columns: 1fr; align-items: center; }
+  .chapter + .chapter { border-top: 1px solid var(--line); }
+  .marker { position: absolute; left: calc(-2.25rem + 0.6rem - 6px); top: clamp(2.5rem, 6vw, 4.5rem); width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line-strong); display: grid; place-items: center; transition: border-color var(--t-story) var(--ease), box-shadow var(--t-story) var(--ease); }
+  .marker span { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: 0; transition: opacity var(--t-story) var(--ease); }
+  .chapter.is-in .marker { border-color: var(--accent); box-shadow: 0 0 0 5px rgba(46,196,182,.15); }
+  .chapter.is-in .marker span { opacity: 1; }
+  .meta { display: flex; gap: 1.25rem; font-size: var(--fs-xs); color: var(--muted); }
+  .years { color: var(--accent); }
+  .text h3 { font-size: clamp(1.4rem, 2.6vw, 1.95rem); max-width: 22ch; margin-bottom: 0.5em; letter-spacing: -0.02em; }
+  .text p { color: var(--text-2); max-width: 56ch; }
+  .num { display: flex; align-items: baseline; gap: 0.8rem; margin: 1.1rem 0 0.6rem; }
+  .num strong { font-family: var(--font-display); font-size: var(--fs-xl); letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--text); }
+  .num span { color: var(--muted); font-size: var(--fs-sm); }
+  .more { display: inline-block; margin-top: 0.4rem; font-weight: 500; font-size: var(--fs-sm); color: var(--accent); text-decoration: none; }
+  .more::after { content: ' →'; }
+  .more:hover { text-decoration: underline; }
+  .visual { margin: 0; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); background: var(--bg-2); aspect-ratio: 4 / 3; clip-path: inset(0 0 100% 0 round var(--radius-lg)); transition: clip-path 900ms var(--ease); }
+  .chapter.is-in .visual { clip-path: inset(0 0 0 0 round var(--radius-lg)); }
+  .visual img, .visual svg { width: 100%; height: 100%; }
+  .visual img { transform: scale(1.04); transition: transform 1200ms var(--ease); }
+  .chapter.is-in .visual img { transform: none; }
+  .visual.paper { background: #f3f0e8; padding: 1.25rem; }
+  .visual.paper img { filter: none; }
+  .visual.portrait { aspect-ratio: 1; max-width: 420px; }
+  .d-old rect { fill: none; stroke: var(--line-strong); } .d-old text { fill: var(--muted); }
+  .d-new rect { fill: rgba(46,196,182,.08); stroke: var(--accent); } .d-new text { fill: var(--text); }
+  .d-arrow { stroke: var(--accent); fill: none; stroke-width: 1.5; }
+  .visual svg { padding: 1rem; } .visual text { font-family: var(--font-body); font-size: 13px; }
+  .text, .meta { opacity: 0; transform: translateY(16px); transition: opacity var(--t-story) var(--ease), transform var(--t-story) var(--ease); }
+  .chapter.is-in .text, .chapter.is-in .meta { opacity: 1; transform: none; }
+  .chapter.is-in .text { transition-delay: 120ms; }
+
+  @media (min-width: 860px) {
+    .chapters { padding-left: 4rem; }
+    .route { left: 1rem; }
+    .marker { left: calc(-4rem + 1rem - 6px); }
+    .chapter { grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.05fr); }
+    .meta { flex-direction: column; gap: 0.3rem; align-self: start; padding-top: 0.35rem; }
+    .chapter:nth-child(odd) .visual { order: 3; }
+    .chapter:nth-child(even) { grid-template-columns: 150px minmax(0, 1.05fr) minmax(0, 1fr); }
+    .chapter:nth-child(even) .visual { order: 2; } .chapter:nth-child(even) .text { order: 3; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .visual, .text, .meta { clip-path: none; opacity: 1; transform: none; transition: none; } .visual img { transform: none; }
+    .route-fg { stroke-dashoffset: 0; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-story]');
+  if (root) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const line = root.querySelector<SVGLineElement>('[data-route-line]')!;
+    const chapters = [...root.querySelectorAll<HTMLElement>('[data-chapter]')];
+    const fmt = (n: number) => Math.round(n).toLocaleString('en-GB');
+
+    // Route line follows the reader: drawn to the point 45% down the viewport.
+    const drawRoute = () => {
+      const r = root.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (innerHeight * 0.45 - r.top) / r.height));
+      line.style.strokeDashoffset = String(reduce ? 0 : 1 - p);
+    };
+    drawRoute(); addEventListener('scroll', drawRoute, { passive: true }); addEventListener('resize', drawRoute);
+
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return; const el = e.target as HTMLElement; el.classList.add('is-in'); io.unobserve(el);
+      const n = el.querySelector<HTMLElement>('[data-count]'); if (!n || reduce) return;
+      const target = Number(n.dataset.count), pre = n.dataset.prefix || '', suf = n.dataset.suffix || '', t0 = performance.now();
+      const tick = (t: number) => { const p = Math.min(1, (t - t0) / 1100); n.textContent = pre + fmt(target * (1 - Math.pow(1 - p, 3))) + suf; if (p < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    }), { rootMargin: '0px 0px -22% 0px', threshold: 0.2 });
+    chapters.forEach((c) => io.observe(c));
+  }
+</script>

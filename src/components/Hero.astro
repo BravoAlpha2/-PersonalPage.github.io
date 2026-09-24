@@ -1,0 +1,236 @@
+---
+import { site } from '../config/site';
+import { url } from '../lib/url';
+const steps = ['Data', 'Models', 'Scenarios', 'Decisions'];
+---
+<section class="hero" aria-labelledby="hero-title">
+  <canvas class="hero-canvas" data-hero-canvas aria-hidden="true"></canvas>
+  <div class="hero-readout mono" data-hero-readout aria-hidden="true">
+    <span data-r-coord>41.93° N · 6.75° W</span><span data-r-val>elev — · suit —</span>
+  </div>
+  <div class="hero-legend mono" aria-hidden="true">
+    <span data-legend="grid">grid</span><span data-legend="terrain">relief</span><span data-legend="landuse">land use</span><span data-legend="bio">species</span><span data-legend="net">model</span>
+    <em>synthetic field · illustration</em>
+  </div>
+
+  <div class="container hero-inner">
+    <div class="hero-text">
+      <div class="hero-who">
+        <img class="hero-portrait" src={url('/images/nuno-garcia.webp')} alt="" width="72" height="72" decoding="async" />
+        <p class="mono hero-kicker">Geospatial data scientist · {site.location}</p>
+      </div>
+      <h1 id="hero-title">Nuno Garcia</h1>
+      <p class="hero-sub"><span>Geospatial intelligence</span><span>Environmental data science</span></p>
+      <p class="lede">I turn Earth observation, biodiversity models and operational data into intelligence people can act on — from satellite time-series and species forecasts to dashboards a forestry crew uses every morning.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href={url('/work')} data-track="Explore work clicked">Explore my work</a>
+        <a class="btn btn-ghost" href={url('/#help')}>See what I can build</a>
+      </div>
+      <ul class="hero-links">
+        {site.links.cv ? <li><a href={url(site.links.cv)} download data-track="CV downloaded">CV (PDF)</a></li> : <li><span class="todo" title="Add a CV PDF path in src/config/site.ts">CV — TODO</span></li>}
+        <li><a href={site.links.github} target="_blank" rel="noopener" data-track="GitHub clicked">GitHub</a></li>
+        <li><a href={site.links.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href={url('/research')}>Research</a></li>
+      </ul>
+      <ol class="hero-steps mono" aria-label="How data becomes decisions">
+        {steps.map((s, i) => <li style={`--i:${i}`}>{s}</li>)}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero { position: relative; min-height: calc(100svh - 4.5rem); display: flex; align-items: center; overflow: hidden; border-bottom: 1px solid var(--line); isolation: isolate; }
+  .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  .hero::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 38%, transparent 72%); }
+  .hero-inner { position: relative; z-index: 2; padding-block: clamp(4rem, 10vh, 7rem); }
+  .hero-text { max-width: 640px; }
+  .hero-who { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.4rem; }
+  .hero-portrait { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); box-shadow: 0 0 0 4px rgba(46,196,182,.15); }
+  .hero-kicker { color: var(--muted); margin: 0; }
+  h1 { margin-bottom: 0.35em; }
+  .hero-sub { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 500; color: var(--text-2); display: grid; gap: 0.1rem; margin-bottom: 1.4rem; letter-spacing: -0.01em; }
+  .hero-sub span { padding-left: 0.9rem; border-left: 2px solid var(--accent); line-height: 1.25; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.8rem 0 1.4rem; }
+  .hero-links { list-style: none; display: flex; flex-wrap: wrap; gap: 1.4rem; padding: 0; margin: 0 0 2.6rem; }
+  .hero-links a { font-size: var(--fs-sm); color: var(--text-2); text-decoration: none; }
+  .hero-links a:hover { color: var(--accent); }
+  .hero-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 0; color: var(--muted); font-size: var(--fs-xs); }
+  .hero-steps li { opacity: 0.35; transition: opacity var(--t-story) var(--ease), color var(--t-story) var(--ease); animation: step-in 600ms var(--ease) forwards; animation-delay: calc(700ms + var(--i) * 750ms); }
+  .hero-steps li + li::before { content: '→'; margin: 0 0.6rem; color: var(--muted); }
+  @keyframes step-in { to { opacity: 1; color: var(--text); } }
+  .hero-readout, .hero-legend { position: absolute; z-index: 2; pointer-events: none; font-size: var(--fs-xs); color: var(--muted); }
+  .hero-readout { display: none; gap: 1rem; right: var(--gutter); top: 1.25rem; padding: 0.35rem 0.6rem; border: 1px solid var(--line); border-radius: 4px; background: color-mix(in srgb, var(--bg) 75%, transparent); }
+  .hero-readout.is-on { display: flex; }
+  .hero-legend { right: var(--gutter); bottom: 1.25rem; display: flex; gap: 1rem; align-items: center; }
+  .hero-legend span { opacity: 0.35; transition: opacity var(--t-story) var(--ease); }
+  .hero-legend span.is-on { opacity: 1; color: var(--text-2); }
+  .hero-legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 0.4rem; background: currentColor; opacity: .6; }
+  .hero-legend em { font-style: normal; opacity: 0.6; margin-left: 0.5rem; }
+  @media (max-width: 900px) { .hero-legend em { display: none; } .hero::before { background: linear-gradient(180deg, transparent 0%, var(--bg) 70%); } .hero { align-items: flex-end; } }
+  @media (max-width: 600px) { .hero-legend, .hero-readout { display: none !important; } .hero-sub { font-size: var(--fs-md); } }
+  @media (prefers-reduced-motion: reduce) { .hero-steps li { animation: none; opacity: 1; color: var(--text); } }
+</style>
+
+<script>
+  import { makeNoise, isolines } from '../lib/noise';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-hero-canvas]');
+  if (canvas) {
+    const ctx = canvas.getContext('2d')!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const touch = matchMedia('(hover: none)').matches;
+    const legend = Object.fromEntries([...document.querySelectorAll<HTMLElement>('[data-legend]')].map((e) => [e.dataset.legend!, e]));
+    const readout = document.querySelector<HTMLElement>('[data-hero-readout]')!;
+    const rCoord = readout.querySelector<HTMLElement>('[data-r-coord]')!, rVal = readout.querySelector<HTMLElement>('[data-r-val]')!;
+
+    const N1 = makeNoise(41), N2 = makeNoise(7), R = makeNoise(93).rand;
+    let W = 0, H = 0, dpr = 1, cols = 0, rows = 0, cell = 0;
+    let terrain = new Float32Array(0), contours: number[][][] = [], landuse: HTMLCanvasElement | null = null, relief: HTMLCanvasElement | null = null;
+    let pts: { x: number; y: number; r: number; t: number }[] = [], edges: [number, number][] = [];
+    const par = { x: 0, y: 0, tx: 0, ty: 0 }; let mouse: { x: number; y: number } | null = null;
+    const start = performance.now(); let raf = 0, lastMove = 0;
+
+    const REVEAL = { grid: 0, terrain: 600, landuse: 1400, bio: 2200, net: 2900 } as const;
+    const ease = (t: number) => 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
+    const ph = (now: number, k: keyof typeof REVEAL, dur = 900) => (reduce ? 1 : ease((now - start - REVEAL[k]) / dur));
+
+    function build() {
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(devicePixelRatio || 1, 2); W = rect.width; H = rect.height;
+      canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const small = W < 700;
+      cell = small ? 12 : 9; cols = Math.ceil(W / cell) + 2; rows = Math.ceil(H / cell) + 2;
+      terrain = new Float32Array(cols * rows);
+      const sc = 0.028;
+      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) terrain[y * cols + x] = N1.fbm(x * sc * cell / 9, y * sc * cell / 9, 5);
+      contours = [0.38, 0.46, 0.54, 0.62, 0.7].map((l) => isolines(terrain, cols, rows, l));
+      // Land-use raster: offscreen at grid resolution, scaled up (deliberately blocky = raster)
+      landuse = document.createElement('canvas'); landuse.width = cols; landuse.height = rows;
+      const lc = landuse.getContext('2d')!; const img = lc.createImageData(cols, rows);
+      relief = document.createElement('canvas'); relief.width = cols; relief.height = rows;
+      const rc = relief.getContext('2d')!; const rimg = rc.createImageData(cols, rows);
+      const at = (x: number, y: number) => terrain[Math.min(rows - 1, Math.max(0, y)) * cols + Math.min(cols - 1, Math.max(0, x))];
+      const lx = -0.6, ly = -0.6, lz = 0.55; const ln = Math.hypot(lx, ly, lz);
+      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+        const i = (y * cols + x) * 4, t = terrain[y * cols + x];
+        // shaded relief from the terrain gradient (light from the north-west)
+        const dx = (at(x + 1, y) - at(x - 1, y)) * 9, dy = (at(x, y + 1) - at(x, y - 1)) * 9;
+        const nn = Math.hypot(dx, dy, 1); const shade = Math.max(0, (-dx * lx - dy * ly + lz) / (nn * ln));
+        const lum = 0.35 + shade * 0.65; // 0.35..1
+        rimg.data[i] = 237; rimg.data[i + 1] = 232; rimg.data[i + 2] = 222; rimg.data[i + 3] = Math.round(4 + lum * 44 + t * 12);
+        const u = N2.fbm(x * 0.05 * cell / 9, y * 0.05 * cell / 9, 3);
+        let rgba: number[] = [0, 0, 0, 0];
+        if (t > 0.66) rgba = [237, 232, 222, 6];
+        else if (u > 0.58) rgba = [46, 196, 182, 34];
+        else if (u > 0.47) rgba = [242, 193, 78, 16];
+        else if (u < 0.33 && t < 0.42) rgba = [138, 148, 163, 18];
+        img.data[i] = rgba[0]; img.data[i + 1] = rgba[1]; img.data[i + 2] = rgba[2]; img.data[i + 3] = rgba[3];
+      }
+      lc.putImageData(img, 0, 0); rc.putImageData(rimg, 0, 0);
+      // Species points: sampled where forest-ish and mid elevation
+      pts = []; const want = small ? 60 : 130; let tries = 0;
+      while (pts.length < want && tries++ < 6000) {
+        const x = R() * W, y = R() * H, gx = Math.min(cols - 1, Math.floor(x / cell)), gy = Math.min(rows - 1, Math.floor(y / cell));
+        const t = terrain[gy * cols + gx], u = N2.fbm(gx * 0.05 * cell / 9, gy * 0.05 * cell / 9, 3);
+        if (t > 0.4 && t < 0.72 && u > 0.5 && R() < 0.9) pts.push({ x, y, r: 1.3 + R() * 2.2, t: R() });
+      }
+      edges = [];
+      for (let i = 0; i < pts.length; i++) {
+        const d = pts.map((p, j) => [Math.hypot(p.x - pts[i].x, p.y - pts[i].y), j] as [number, number]).filter(([dd, j]) => j !== i && dd < 110).sort((a, b) => a[0] - b[0]).slice(0, 2);
+        d.forEach(([, j]) => { if (i < j) edges.push([i, j]); });
+      }
+    }
+
+    function draw(now: number) {
+      ctx.clearRect(0, 0, W, H);
+      par.x += (par.tx - par.x) * 0.06; par.y += (par.ty - par.y) * 0.06;
+      const P = (k: number) => [par.x * k, par.y * k];
+
+      // grid + ticks
+      const g = ph(now, 'grid', 700);
+      if (g > 0) {
+        const [ox, oy] = P(2); ctx.save(); ctx.globalAlpha = g; ctx.strokeStyle = 'rgba(237,232,222,0.055)'; ctx.lineWidth = 1;
+        const step = 64; ctx.beginPath();
+        for (let x = (ox % step + step) % step; x < W; x += step) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+        for (let y = (oy % step + step) % step; y < H; y += step) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(138,148,163,0.55)'; ctx.font = '10px "IBM Plex Mono", monospace'; ctx.textAlign = 'center';
+        for (let x = step * 2; x < W - 40; x += step * 3) ctx.fillText((-9.5 + (x / W) * 3.5).toFixed(2) + '°', x, H - 8);
+        ctx.textAlign = 'left'; for (let y = step; y < H - 30; y += step * 2) ctx.fillText((42.2 - (y / H) * 5.3).toFixed(2) + '°', 8, y + 3);
+        ctx.restore();
+      }
+      // shaded relief
+      const rl = ph(now, 'terrain', 1300);
+      if (rl > 0 && relief) { const [ox, oy] = P(6); ctx.save(); ctx.globalAlpha = rl; ctx.imageSmoothingEnabled = true; ctx.drawImage(relief, ox - cell, oy - cell, cols * cell, rows * cell); ctx.restore(); }
+      // land-use raster
+      const lu = ph(now, 'landuse', 1100);
+      if (lu > 0 && landuse) { const [ox, oy] = P(4); ctx.save(); ctx.globalAlpha = lu; ctx.imageSmoothingEnabled = false; ctx.drawImage(landuse, ox - cell, oy - cell, cols * cell, rows * cell); ctx.restore(); }
+      // terrain contours (drawn progressively, from low to high)
+      const tr = ph(now, 'terrain', 1300);
+      if (tr > 0) {
+        const [ox, oy] = P(6); ctx.save(); ctx.lineWidth = 1;
+        contours.forEach((segs, li) => {
+          const a = Math.min(1, Math.max(0, tr * 5 - li)); if (a <= 0) return;
+          ctx.strokeStyle = `rgba(237,232,222,${0.09 + li * 0.025})`; ctx.globalAlpha = a; ctx.beginPath();
+          const n = Math.floor(segs.length * a);
+          for (let i = 0; i < n; i++) { const s = segs[i]; ctx.moveTo(s[0] * cell - cell + ox, s[1] * cell - cell + oy); ctx.lineTo(s[2] * cell - cell + ox, s[3] * cell - cell + oy); }
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+      // network (model links)
+      const ne = ph(now, 'net', 1200);
+      if (ne > 0) {
+        const [ox, oy] = P(10); ctx.save(); ctx.strokeStyle = 'rgba(46,196,182,0.22)'; ctx.lineWidth = 1; ctx.beginPath();
+        const n = Math.floor(edges.length * ne);
+        for (let i = 0; i < n; i++) { const [a, b] = edges[i]; ctx.moveTo(pts[a].x + ox, pts[a].y + oy); ctx.lineTo(pts[b].x + ox, pts[b].y + oy); }
+        ctx.stroke(); ctx.restore();
+      }
+      // species points
+      const bi = ph(now, 'bio', 1400);
+      if (bi > 0) {
+        const [ox, oy] = P(10); ctx.save();
+        for (const p of pts) { const a = Math.min(1, Math.max(0, (bi - p.t * 0.7) / 0.3)); if (a <= 0) continue;
+          ctx.globalAlpha = a; ctx.fillStyle = '#2ec4b6'; ctx.beginPath(); ctx.arc(p.x + ox, p.y + oy, p.r * a, 0, Math.PI * 2); ctx.fill();
+          if (p.r > 3) { ctx.strokeStyle = 'rgba(46,196,182,0.35)'; ctx.beginPath(); ctx.arc(p.x + ox, p.y + oy, p.r * 2.4, 0, Math.PI * 2); ctx.stroke(); } }
+        ctx.restore();
+      }
+      // identify probe
+      if (mouse && !touch) {
+        ctx.save(); ctx.strokeStyle = 'rgba(237,232,222,0.35)'; ctx.setLineDash([3, 5]); ctx.beginPath();
+        ctx.moveTo(mouse.x, 0); ctx.lineTo(mouse.x, H); ctx.moveTo(0, mouse.y); ctx.lineTo(W, mouse.y); ctx.stroke();
+        ctx.setLineDash([]); ctx.strokeStyle = '#2ec4b6'; ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 9, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      }
+      // legend state
+      (['grid', 'terrain', 'landuse', 'bio', 'net'] as const).forEach((k) => legend[k]?.classList.toggle('is-on', ph(now, k, 400) > 0.5));
+    }
+
+    function loop() {
+      const now = performance.now();
+      draw(now);
+      const animating = !reduce && now - start < 4600;
+      const moving = now - lastMove < 1600 || Math.abs(par.tx - par.x) > 0.2 || Math.abs(par.ty - par.y) > 0.2;
+      if (animating || moving) raf = requestAnimationFrame(loop); else raf = 0;
+    }
+    const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+
+    build(); kick();
+    let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(() => { build(); kick(); }, 150); });
+
+    const hero = canvas.parentElement!;
+    if (!touch) {
+      hero.addEventListener('pointermove', (e) => {
+        const r = canvas.getBoundingClientRect(); mouse = { x: e.clientX - r.left, y: e.clientY - r.top };
+        par.tx = ((mouse.x / W) - 0.5) * 2; par.ty = ((mouse.y / H) - 0.5) * 2; lastMove = performance.now();
+        const gx = Math.min(cols - 1, Math.floor(mouse.x / cell)), gy = Math.min(rows - 1, Math.floor(mouse.y / cell));
+        const t = terrain[gy * cols + gx] ?? 0, u = N2.fbm(gx * 0.05 * cell / 9, gy * 0.05 * cell / 9, 3);
+        rCoord.textContent = `${(42.2 - (mouse.y / H) * 5.3).toFixed(3)}° N · ${Math.abs(-9.5 + (mouse.x / W) * 3.5).toFixed(3)}° W`;
+        rVal.textContent = `elev ${t.toFixed(2)} · suit ${(u * 0.8 + t * 0.2).toFixed(2)}`;
+        readout.classList.add('is-on'); kick();
+      });
+      hero.addEventListener('pointerleave', () => { mouse = null; par.tx = par.ty = 0; readout.classList.remove('is-on'); lastMove = performance.now(); kick(); });
+    }
+  }
+</script>

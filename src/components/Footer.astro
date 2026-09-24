@@ -1,0 +1,29 @@
+---
+import { site } from '../config/site';
+import { url } from '../lib/url';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <div class="mono muted">39.82° N · 7.49° W · {site.location}</div>
+      <div class="muted small">© {year} {site.name}. Built with Astro, no trackers by default.</div>
+    </div>
+    <ul class="links">
+      <li><a href={site.links.github} rel="me noopener" target="_blank" data-track="GitHub clicked">GitHub</a></li>
+      <li><a href={site.links.linkedin} rel="me noopener" target="_blank">LinkedIn</a></li>
+      <li><a href={site.links.researchgate} rel="me noopener" target="_blank">ResearchGate</a></li>
+      <li><a href={url('/research')}>Research</a></li>
+      {site.links.cv && <li><a href={url(site.links.cv)} download data-track="CV downloaded">CV</a></li>}
+      <li><a href={`mailto:${site.links.email}`} data-track="Contact clicked" data-track-props='{"where":"footer"}'>Email</a></li>
+    </ul>
+  </div>
+</footer>
+<style>
+  .footer { border-top: 1px solid var(--line); padding: 2.5rem 0; margin-top: var(--section); }
+  .footer-inner { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: center; }
+  .links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1.25rem; }
+  .links a { text-decoration: none; color: var(--text-2); font-size: var(--fs-sm); }
+  .links a:hover { color: var(--accent); }
+  .small { font-size: var(--fs-sm); }
+</style>

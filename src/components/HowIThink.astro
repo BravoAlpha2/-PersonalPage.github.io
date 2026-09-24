@@ -1,0 +1,59 @@
+---
+const steps = [
+  { k: 'Observe', t: 'Understand the system before touching the data. What is the decision, who makes it, and what would change their mind?' },
+  { k: 'Connect', t: 'Integrate sources at the scale where each is strongest — satellite archives, occurrence records, operational logs, socioeconomic pathways.' },
+  { k: 'Model', t: 'Identify relationships that hold: niche models, land-use allocation, trend tests. Know what the data cannot support.' },
+  { k: 'Simulate', t: 'Explore possible futures side by side. A single map answers a question; a set of scenarios exposes a choice.' },
+  { k: 'Decide', t: 'Translate the analysis into a tool, a workflow or a recommendation — something that survives contact with a Tuesday morning.' },
+];
+---
+<section class="section" id="how" aria-labelledby="think-title">
+  <div class="container">
+    <header class="section-head">
+      <span class="index">How I think</span>
+      <h2 id="think-title">Data → models → scenarios → decisions</h2>
+      <p class="lede">The same five moves whether the subject is a protected area, a forestry crew or the whole European biodiversity map.</p>
+    </header>
+    <div class="think" data-think>
+      <svg class="think-vis" viewBox="0 0 400 300" aria-hidden="true" data-think-vis>
+        <g class="l l0"><path d="M20 40h360M20 100h360M20 160h360M20 220h360M20 280h360M60 20v280M140 20v280M220 20v280M300 20v280" /></g>
+        <g class="l l1"><circle cx="90" cy="80" r="4"/><circle cx="170" cy="130" r="4"/><circle cx="250" cy="70" r="4"/><circle cx="310" cy="190" r="4"/><circle cx="120" cy="230" r="4"/><circle cx="230" cy="240" r="4"/><circle cx="330" cy="110" r="4"/></g>
+        <g class="l l2"><path d="M90 80 170 130 250 70 330 110M170 130 120 230 230 240 310 190M250 70 310 190"/></g>
+        <g class="l l3"><path class="s1" d="M40 250 C 120 200, 200 220, 360 90"/><path class="s2" d="M40 250 C 130 230, 220 190, 360 140"/><path class="s3" d="M40 250 C 140 250, 240 170, 360 180"/></g>
+        <g class="l l4"><rect x="228" y="52" width="130" height="40" rx="4"/><text x="240" y="77">recommend: protect</text></g>
+      </svg>
+      <ol class="think-steps">
+        {steps.map((s, i) => (<li data-step={i}><h3>{s.k}</h3><p>{s.t}</p></li>))}
+      </ol>
+    </div>
+  </div>
+</section>
+<style>
+  .think { display: grid; gap: 2rem; }
+  @media (min-width: 900px) { .think { grid-template-columns: 1fr 1fr; align-items: start; } .think-vis { position: sticky; top: 6rem; } }
+  .think-vis { width: 100%; height: auto; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  .l path, .l circle, .l rect { fill: none; stroke: var(--muted); stroke-width: 1; }
+  .l { opacity: .15; transition: opacity var(--t-story) var(--ease); }
+  .l0 path { stroke: rgba(237,232,222,.25); }
+  .l1 circle { fill: var(--accent); stroke: none; }
+  .l2 path { stroke: var(--accent); }
+  .l3 path { stroke-width: 1.5; } .l3 .s1 { stroke: var(--accent); } .l3 .s2 { stroke: var(--amber); } .l3 .s3 { stroke: var(--coral); }
+  .l4 rect { stroke: var(--accent); fill: rgba(46,196,182,.08); } .l4 text { font-family: var(--font-mono); font-size: 11px; fill: var(--text); }
+  .think-vis[data-active="0"] .l0, .think-vis[data-active="1"] .l0, .think-vis[data-active="1"] .l1, .think-vis[data-active="2"] .l0, .think-vis[data-active="2"] .l1, .think-vis[data-active="2"] .l2,
+  .think-vis[data-active="3"] .l0, .think-vis[data-active="3"] .l1, .think-vis[data-active="3"] .l3, .think-vis[data-active="4"] .l0, .think-vis[data-active="4"] .l1, .think-vis[data-active="4"] .l3, .think-vis[data-active="4"] .l4 { opacity: 1; }
+  .think-vis[data-active="4"] .l3 .s2, .think-vis[data-active="4"] .l3 .s3 { opacity: .25; }
+  .think-steps { list-style: none; margin: 0; padding: 0; }
+  .think-steps li { padding: 1.5rem 0 1.5rem 1.5rem; border-left: 2px solid var(--line); transition: border-color var(--t-story) var(--ease); }
+  .think-steps li.is-active { border-color: var(--accent); } .think-steps li.is-active h3 { color: var(--accent); }
+  .think-steps h3 { font-size: var(--fs-md); margin-bottom: 0.3rem; transition: color var(--t-story) var(--ease); }
+  .think-steps p { margin: 0; color: var(--text-2); font-size: var(--fs-sm); }
+</style>
+<script>
+  const vis = document.querySelector<SVGElement>('[data-think-vis]');
+  if (vis) {
+    const steps = [...document.querySelectorAll<HTMLElement>('[data-step]')];
+    const set = (i: number) => { vis.dataset.active = String(i); steps.forEach((s, j) => s.classList.toggle('is-active', j === i)); };
+    const io = new IntersectionObserver((entries) => { entries.forEach((e) => { if (e.isIntersecting) set(Number((e.target as HTMLElement).dataset.step)); }); }, { rootMargin: '-40% 0px -45% 0px' });
+    steps.forEach((s) => io.observe(s)); set(0);
+  }
+</script>

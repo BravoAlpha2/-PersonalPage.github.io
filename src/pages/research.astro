@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+import { site } from '../config/site';
+const pubs = (await getCollection('publications')).sort((a, b) => b.data.year - a.data.year || a.data.title.localeCompare(b.data.title));
+const projects = await getCollection('projects');
+const relatedFor = (id: string) => projects.filter((p) => p.data.publications.includes(id));
+const roleLabel = { 'lead author': 'Lead author', 'co-author': 'Co-author', thesis: 'Thesis' };
+const cvHref = site.links.cv ? url(site.links.cv) : '';
+const jsonLd = pubs.filter((p) => p.data.doi).map((p) => ({ '@context': 'https://schema.org', '@type': 'ScholarlyArticle', headline: p.data.title, datePublished: String(p.data.year), isPartOf: { '@type': 'Periodical', name: p.data.journal }, identifier: `https://doi.org/${p.data.doi}`, url: p.data.href, author: { '@type': 'Person', name: 'Nuno Garcia' } }));
+---
+<Base title="Research — Nuno Garcia" description="Peer-reviewed papers, datasets, and thesis on biodiversity modelling, Earth observation, Google Earth Engine and WebGIS." jsonLd={jsonLd}>
+  <section class="section">
+    <div class="container">
+      <header class="section-head">
+        <span class="index">Research</span>
+        <h1>Questions, methods, and what they became</h1>
+        <p class="lede">Each entry gives the context, the question, the method and my contribution. Where a paper produced a tool you can open, the link is there.</p>
+      </header>
+      {cvHref && <p class="cv-row"><a class="btn btn-ghost" href={cvHref} download data-track="CV downloaded">Download CV (PDF)</a><a class="btn-link" href={site.links.researchgate} target="_blank" rel="noopener">ResearchGate</a></p>}
+
+      <div class="filters" role="group" aria-label="Filter by role">
+        <button type="button" class="chip is-on" data-filter="all">All ({pubs.length})</button>
+        <button type="button" class="chip" data-filter="lead author">Lead author ({pubs.filter((p) => p.data.role === 'lead author').length})</button>
+        <button type="button" class="chip" data-filter="co-author">Co-author ({pubs.filter((p) => p.data.role === 'co-author').length})</button>
+        <button type="button" class="chip" data-filter="thesis">Thesis</button>
+        <button type="button" class="chip" data-filter="in review">In review</button>
+      </div>
+
+      <ol class="list">
+        {pubs.map((p) => (
+          <li class="item" data-role={p.data.role} data-status={p.data.status} id={p.id}>
+            <a class:list={['fig', { paper: p.data.image?.paper, empty: !p.data.image }]} href={p.data.href} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+              {p.data.image ? <img src={url(p.data.image.src)} alt="" loading="lazy" decoding="async" /> : <span class="mono">{p.data.status === 'in review' ? 'in review' : String(p.data.year)}</span>}
+            </a>
+            <div class="body">
+              <div class="meta mono"><span class:list={{ todo: p.data.journal.startsWith('TODO') }}>{p.data.journal}</span><span>{p.data.year}</span><span class="role">{roleLabel[p.data.role]}</span>{p.data.status === 'in review' && <span class="review">in peer review</span>}{p.data.doi && <a href={`https://doi.org/${p.data.doi}`} target="_blank" rel="noopener">doi:{p.data.doi}</a>}</div>
+              <h2>{p.data.href ? <a href={p.data.href} target="_blank" rel="noopener">{p.data.title}</a> : p.data.title}</h2>
+              <dl>
+                {p.data.context && <><dt>Context</dt><dd>{p.data.context}</dd></>}
+                {p.data.question && <><dt>Question</dt><dd>{p.data.question}</dd></>}
+                {p.data.method && <><dt>Method</dt><dd>{p.data.method}</dd></>}
+                <dt>Contribution</dt><dd>{p.data.contribution}</dd>
+                {p.data.impact && <><dt>Impact</dt><dd>{p.data.impact}</dd></>}
+              </dl>
+              <div class="tail">
+                {p.data.tool && <a class="tool" href={p.data.tool.href} target="_blank" rel="noopener">↗ {p.data.tool.label}</a>}
+                {relatedFor(p.id).map((pr) => <a class="rel" href={url(`/work/${pr.id}`)}>Case study: {pr.data.title}</a>)}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</Base>
+<style>
+  .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+  .filters .chip { cursor: pointer; }
+  .filters .chip.is-on { border-color: var(--accent); color: var(--text); }
+  .list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .item { display: grid; gap: 1rem 2rem; padding: 2rem 0; border-bottom: 1px solid var(--line); }
+  .item[hidden] { display: none; }
+  @media (min-width: 800px) { .item { grid-template-columns: 220px 1fr; } }
+  .fig { display: block; aspect-ratio: 4/3; border-radius: var(--radius); border: 1px solid var(--line); overflow: hidden; background: var(--bg-2); }
+  .fig img { width: 100%; height: 100%; object-fit: cover; object-position: top left; filter: saturate(.9); }
+  .fig.paper { background: #f3f0e8; padding: 0.6rem; } .fig.paper img { object-fit: contain; filter: none; }
+  .fig.empty { display: grid; place-items: center; color: var(--muted); font-size: var(--fs-xs); background: repeating-linear-gradient(-45deg, var(--bg-2) 0 8px, var(--surface) 8px 9px); }
+  .review { color: var(--amber); }
+  .cv-row { display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center; margin: -0.5rem 0 2rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: var(--fs-xs); color: var(--muted); margin-bottom: 0.5rem; }
+  .meta .role { color: var(--accent); }
+  .meta a { color: var(--muted); text-decoration: none; } .meta a:hover { color: var(--text); }
+  .item h2 { font-size: var(--fs-md); line-height: 1.35; margin-bottom: 0.9rem; }
+  .item h2 a { text-decoration: none; } .item h2 a:hover { color: var(--accent); }
+  dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 1.25rem; font-size: var(--fs-sm); max-width: 72ch; }
+  dt { color: var(--muted); font-family: var(--font-mono); font-size: var(--fs-xs); padding-top: 0.15em; }
+  dd { margin: 0; color: var(--text-2); }
+  .tail { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.9rem; font-size: var(--fs-sm); }
+  .tool { color: var(--accent); text-decoration: none; }
+  .rel { color: var(--text-2); text-decoration: none; } .rel:hover { color: var(--text); }
+</style>
+<script>
+  const btns = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')], items = [...document.querySelectorAll<HTMLElement>('.item')];
+  btns.forEach((b) => b.addEventListener('click', () => { btns.forEach((x) => x.classList.toggle('is-on', x === b)); items.forEach((it) => (it.hidden = b.dataset.filter !== 'all' && it.dataset.role !== b.dataset.filter && it.dataset.status !== b.dataset.filter)); }));
+</script>

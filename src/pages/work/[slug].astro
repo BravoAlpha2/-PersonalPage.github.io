@@ -1,0 +1,171 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { url } from '../../lib/url';
+import { site } from '../../config/site';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
+}
+const { project } = Astro.props;
+const d = project.data;
+const { Content } = await render(project);
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const idx = all.findIndex((p) => p.id === project.id);
+const next = all[(idx + 1) % all.length];
+const pubs = await Promise.all(d.publications.map((id) => getEntry('publications', id)));
+const coord = `${Math.abs(d.location.lat).toFixed(3)}° ${d.location.lat >= 0 ? 'N' : 'S'} · ${Math.abs(d.location.lon).toFixed(3)}° ${d.location.lon >= 0 ? 'E' : 'W'}`;
+const jsonLd = [{ '@context': 'https://schema.org', '@type': 'CreativeWork', name: d.title, description: d.summary, author: { '@type': 'Person', name: site.name }, about: d.subtitle, dateCreated: d.years.slice(0, 4), locationCreated: { '@type': 'Place', name: d.location.name } }];
+const isTodo = (s: string) => s.startsWith('TODO');
+const diagram = d.theme === 'operations' ? 'workflow' : d.theme === 'ai' ? 'ai' : null;
+---
+<Base title={`${d.title} — Nuno Garcia`} description={d.summary} image={d.cover?.src} type="article" jsonLd={jsonLd}>
+  <article>
+    <header class="hd">
+      <div class="container">
+        <p class="crumbs mono"><a href={url('/work')}>Work</a> / {String(d.order).padStart(2, '0')}</p>
+        <h1>{d.title}</h1>
+        <p class="sub">{d.subtitle}</p>
+        <dl class="facts mono">
+          <div><dt>Organisation</dt><dd>{d.organisation}</dd></div>
+          <div><dt>Role</dt><dd>{d.role}</dd></div>
+          <div><dt>Years</dt><dd>{d.years}</dd></div>
+          <div><dt>Location</dt><dd>{d.location.name}<br /><span class="muted">{coord}</span></dd></div>
+          <div><dt>Scale</dt><dd>{d.scale}</dd></div>
+        </dl>
+      </div>
+      {d.cover ? (
+        <figure class:list={['cover', { paper: d.cover.paper }]} style={`view-transition-name: cover-${project.id}`}>
+          <img src={url(d.cover.src)} alt={d.cover.alt} width="1600" height="900" decoding="async" fetchpriority="high" />
+        </figure>
+      ) : diagram === 'workflow' ? (
+        <figure class="cover diagram" aria-label="Before and after workflow diagram">
+          <svg viewBox="0 0 900 280" role="img" aria-labelledby="wf-t"><title id="wf-t">Manual workflow before; automated geospatial workflow after</title>
+            <g class="wf-before"><text x="20" y="34" class="lbl">before · manual</text>
+              {['Request', 'Hand-drawn map', 'Spreadsheet', 'Phone the crew', 'Wait'].map((t, i) => <g><rect x={20 + i * 176} y="50" width="150" height="44" rx="4" /><text x={95 + i * 176} y="77" text-anchor="middle">{t}</text>{i < 4 && <path d={`M${172 + i * 176} 72h20`} />}</g>)}
+            </g>
+            <g class="wf-after"><text x="20" y="160" class="lbl">after · GIS → operations</text>
+              {['Request logged', 'GIS parcel', 'ODT from template', 'Approval + crew', 'Live dashboard'].map((t, i) => <g><rect x={20 + i * 176} y="176" width="150" height="44" rx="4" /><text x={95 + i * 176} y="203" text-anchor="middle">{t}</text>{i < 4 && <path d={`M${172 + i * 176} 198h20`} />}</g>)}
+              <text x="20" y="256" class="lbl">~40% less mapping time · &gt;50% fewer errors</text>
+            </g>
+          </svg>
+        </figure>
+      ) : (
+        <figure class="cover diagram" aria-label="AI evaluation loop diagram">
+          <svg viewBox="0 0 900 200" role="img" aria-labelledby="ai-t"><title id="ai-t">AI output → environmental validation → expert review → improved model</title>
+            <g class="wf-after">
+              {['AI output', 'Environmental validation', 'Expert review', 'Improved model'].map((t, i) => <g><rect x={20 + i * 222} y="60" width="196" height="54" rx="4" /><text x={118 + i * 222} y="92" text-anchor="middle">{t}</text>{i < 3 && <path d={`M${218 + i * 222} 87h24`} />}</g>)}
+              <path class="loop" d="M 780 114 v 40 H 118 v -40" />
+              <text x="450" y="172" text-anchor="middle" class="lbl">feedback into training</text>
+            </g>
+          </svg>
+        </figure>
+      )}
+    </header>
+
+    <div class="container body">
+      <div class="main">
+        <section class="block">
+          <h2>Challenge</h2>
+          <p>{d.challenge}</p>
+        </section>
+        <section class="block">
+          <h2>Data</h2>
+          <ul>{d.data.map((x) => <li class:list={{ todo: isTodo(x) }}>{x}</li>)}</ul>
+        </section>
+        <section class="block">
+          <h2>Intelligence</h2>
+          <ul>{d.intelligence.map((x) => <li class:list={{ todo: isTodo(x) }}>{x}</li>)}</ul>
+        </section>
+        <section class="block">
+          <h2>Technology</h2>
+          <ul class="chips">{d.technology.map((t) => <li class="chip">{t}</li>)}</ul>
+        </section>
+        <section class="block">
+          <h2>Outcome</h2>
+          <ul class="outcomes">{d.outcome.map((x) => <li class:list={{ todo: isTodo(x) }}>{x}</li>)}</ul>
+        </section>
+        <div class="prose"><Content /></div>
+
+        {d.gallery.length > 0 && (
+          <section class="block">
+            <h2>Visual evidence</h2>
+            <div class="gallery">
+              {d.gallery.map((g) => <figure class:list={{ paper: g.paper }}><img src={url(g.src)} alt={g.alt} loading="lazy" decoding="async" />{g.caption && <figcaption>{g.caption}</figcaption>}</figure>)}
+            </div>
+          </section>
+        )}
+      </div>
+
+      <aside class="side">
+        {d.metrics.length > 0 && (
+          <div class="panel">
+            <span class="rule">measured</span>
+            <ul class="metrics">{d.metrics.map((m) => <li><strong>{m.value}</strong><span>{m.label}</span></li>)}</ul>
+          </div>
+        )}
+        {d.links.length > 0 && (
+          <div class="panel">
+            <span class="rule">open</span>
+            <ul class="links">{d.links.map((l) => <li><a href={l.href} target="_blank" rel="noopener">{l.label}</a></li>)}</ul>
+          </div>
+        )}
+        {pubs.filter(Boolean).length > 0 && (
+          <div class="panel">
+            <span class="rule">publications</span>
+            <ul class="links">{pubs.filter(Boolean).map((p) => <li><a href={url(`/research#${p!.id}`)}>{p!.data.journal}, {p!.data.year} — <span class="muted">{p!.data.role}</span></a></li>)}</ul>
+          </div>
+        )}
+        <div class="panel ask">
+          <span class="rule">similar problem?</span>
+          <p>If your organisation has a version of this challenge, the approach transfers.</p>
+          <a class="btn btn-primary" href={url('/#contact')} data-track="Contact clicked" data-track-props={JSON.stringify({ where: `case-${project.id}` })}>Discuss a project</a>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="container next">
+      <span class="rule">next case</span>
+      <a href={url(`/work/${next.id}`)}><span class="mono muted">{String(next.data.order).padStart(2, '0')}</span> {next.data.title}</a>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .hd { padding-top: clamp(2rem, 5vw, 4rem); }
+  .crumbs { color: var(--muted); margin-bottom: 1rem; } .crumbs a { color: var(--muted); text-decoration: none; } .crumbs a:hover { color: var(--text); }
+  h1 { max-width: 20ch; font-size: clamp(2.2rem, 5vw, 3.6rem); }
+  .sub { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 500; color: var(--text-2); max-width: 32ch; letter-spacing: -0.01em; }
+  .facts { display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; margin: 1.5rem 0 2rem; font-size: var(--fs-xs); }
+  .facts dt { color: var(--muted); } .facts dd { margin: 0.15rem 0 0; color: var(--text); }
+  .cover { margin: 0; width: min(100% - 2 * var(--gutter), var(--container)); margin-inline: auto; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); background: var(--bg-2); }
+  .cover img { width: 100%; height: auto; max-height: 56vh; object-fit: cover; object-position: top left; }
+  .cover.paper { background: #f3f0e8; padding: clamp(1rem, 3vw, 2.5rem); } .cover.paper img { object-fit: contain; max-height: 52vh; }
+  .diagram svg { width: 100%; height: auto; }
+  .diagram rect { fill: var(--surface); stroke: var(--line-strong); } .wf-after rect { stroke: var(--accent); }
+  .diagram text { font-family: var(--font-body); font-size: 13px; fill: var(--text); } .diagram .lbl { font-family: var(--font-mono); font-size: 11px; fill: var(--muted); }
+  .diagram path { stroke: var(--line-strong); fill: none; } .wf-after path { stroke: var(--accent); } .wf-before { opacity: .6; } .loop { stroke-dasharray: 4 6; }
+
+  .body { display: grid; gap: 3rem; padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+  @media (min-width: 960px) { .body { grid-template-columns: minmax(0, 1fr) 300px; } .side { position: sticky; top: 5.5rem; align-self: start; } }
+  .block { margin-bottom: 2.25rem; }
+  .block h2 { font-size: var(--fs-md); color: var(--accent); margin-bottom: 0.6rem; }
+  .block ul:not(.chips) { max-width: var(--measure); color: var(--text-2); display: grid; gap: 0.35rem; }
+  .outcomes li { color: var(--text); }
+  .gallery { display: grid; gap: 1.25rem; }
+  .gallery figure { margin: 0; } .gallery img { border-radius: var(--radius); border: 1px solid var(--line); }
+  .gallery figure.paper img { background: #f3f0e8; padding: 1rem; } .gallery figcaption { color: var(--muted); font-size: var(--fs-sm); margin-top: 0.5rem; }
+  .side { display: grid; gap: 1rem; }
+  .panel { border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1rem 1.2rem 1.2rem; background: var(--surface); }
+  .panel .rule { margin-bottom: 0.7rem; }
+  .metrics { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.8rem; }
+  .metrics strong { display: block; font-family: var(--font-display); font-size: var(--fs-lg); letter-spacing: -0.02em; line-height: 1.1; }
+  .metrics span { font-size: var(--fs-xs); color: var(--muted); }
+  .links { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; font-size: var(--fs-sm); }
+  .links a { color: var(--text-2); } .links a:hover { color: var(--accent); }
+  .ask p { font-size: var(--fs-sm); color: var(--text-2); margin-bottom: 0.9rem; }
+  .next { padding-bottom: 1rem; }
+  .next a { display: inline-flex; gap: 0.75rem; align-items: baseline; margin-top: 0.75rem; font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 600; text-decoration: none; letter-spacing: -0.02em; }
+  .next a:hover { color: var(--accent); }
+</style>

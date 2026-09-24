@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+<Base title="Not found — Nuno Garcia">
+  <section class="section"><div class="container">
+    <p class="mono muted">404 · no data at these coordinates</p>
+    <h1>This page doesn't exist.</h1>
+    <p class="lede">The old site had <code>Portfolio.html</code> and <code>Publications.html</code>; those now live at <a href={url('/work')}>Work</a> and <a href={url('/research')}>Research</a>.</p>
+    <p><a class="btn btn-primary" href={url('/')}>Back to the start</a></p>
+  </div></section>
+</Base>

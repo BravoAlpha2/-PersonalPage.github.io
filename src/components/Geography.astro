@@ -1,0 +1,162 @@
+---
+import { url } from '../lib/url';
+const places = [
+  { id: 'amsterdam', name: 'Amsterdam, Netherlands', org: 'Vrije Universiteit Amsterdam', lat: 52.334, lon: 4.866, years: '2023–2025',
+    lines: ['Biodiversity forecasting for Europe', 'Climate & SSP scenarios', 'CLUMondo land-use modelling'], href: '/work/biodiversity-futures' },
+  { id: 'montesinho', name: 'Montesinho, Portugal', org: 'MontObEO · SAC Montesinho/Nogueira', lat: 41.93, lon: -6.75, years: '2021–2023',
+    lines: ['Biodiversity WebGIS for 1,312 species', 'Satellite niche models in GEE', 'Atlas & open dataset'], href: '/work/montobeo-biodiversity-platform' },
+  { id: 'guarda', name: 'Guarda, Portugal', org: 'Floresta Bem Cuidada', lat: 40.537, lon: -7.267, years: '2025–2026',
+    lines: ['Forestry GIS & remote sensing', 'Dashboards, ODT workflows, Monday.com', 'NIS 2 compliance'], href: '/work/forestry-operational-intelligence' },
+  { id: 'porto', name: 'Porto, Portugal', org: 'University of Porto', lat: 41.15, lon: -8.61, years: '2021–2023',
+    lines: ['MSc Environmental Sciences & Technology (18/20)', 'Thesis on GEE, niche models and WebGIS'], href: '/about' },
+  { id: 'coimbra', name: 'Coimbra, Portugal', org: 'University of Coimbra', lat: 40.207, lon: -8.426, years: '2018–2021',
+    lines: ['BSc Biology', 'Student biology network — events & outreach'], href: '/about' },
+  { id: 'castelo-branco', name: 'Castelo Branco, Portugal', org: 'Base · ANEPC (seasonal)', lat: 39.82, lon: -7.49, years: '2020–2021 · now',
+    lines: ['Logistics & telecoms support for civil protection', 'Remote AI-evaluation work (Labelbox / Alignerr)'], href: '/work/ai-environmental-evaluation' },
+];
+const scales = [
+  { k: 'Satellite', what: 'Time-series from MODIS/Landsat in Google Earth Engine', ex: 'Twenty years of habitat change read from orbit', href: '/work/satellite-time-series' },
+  { k: 'Global', what: 'Functional-integrity thresholds across human-modified landscapes', ex: '20–25% natural habitat per km² — a GEE app to explore it', href: '/work/natures-contributions' },
+  { k: 'Continent', what: 'Europe at 1 km: species forecasts under climate and SSP pathways', ex: '10,000+ species in nested SDMs', href: '/work/biodiversity-futures' },
+  { k: 'Country', what: 'Portugal — from protected-area science to forestry operations', ex: 'National and European conservation-status reconciliation', href: '/work/montobeo-biodiversity-platform' },
+  { k: 'Landscape', what: 'A protected area: richness, suitability, scenarios for 2050', ex: 'Rewilding vs agroforestry in Montesinho', href: '/work/satellite-time-series' },
+  { k: 'Site', what: 'A parcel and a crew: the work order that goes out tomorrow', ex: 'ODT templates, approvals, dashboards', href: '/work/forestry-operational-intelligence' },
+];
+---
+<section class="section" id="map" aria-labelledby="geo-title">
+  <div class="container">
+    <header class="section-head">
+      <span class="index">Geography</span>
+      <h2 id="geo-title">Where the work happened</h2>
+      <p class="lede">Two countries, one protected area studied for four years, and a continent modelled at one-kilometre resolution. Pick a place.</p>
+    </header>
+
+    <div class="geo" data-geo>
+      <div class="geo-map" data-geo-map role="region" aria-label="Map of places Nuno has worked (interactive)">
+        <svg class="geo-schematic" viewBox="0 0 560 420" aria-hidden="true" data-geo-schematic>
+          {Array.from({ length: 9 }, (_, i) => <line x1={i * 70} y1="0" x2={i * 70} y2="420" />)}
+          {Array.from({ length: 7 }, (_, i) => <line x1="0" y1={i * 70} x2="560" y2={i * 70} />)}
+          {places.map((p) => { const x = ((p.lon + 11) / 17) * 560, y = ((55 - p.lat) / 19) * 420; const flip = x > 430 || p.lon < -8; return <g><circle cx={x} cy={y} r="4" /><text x={flip ? x - 9 : x + 9} y={y + 4} text-anchor={flip ? 'end' : 'start'}>{p.name.split(',')[0]}</text></g>; })}
+          <text class="lbl" x="10" y="410">schematic · equirectangular · 11°W–6°E · 36–55°N</text>
+        </svg>
+        <div class="geo-placeholder mono muted" data-geo-placeholder>interactive map loads when in view</div>
+      </div>
+      <ol class="geo-list" data-geo-list>
+        {places.map((p, i) => (
+          <li>
+            <button type="button" class="place" data-place={p.id} data-lat={p.lat} data-lon={p.lon} aria-expanded={i === 0 ? 'true' : 'false'}>
+              <span class="place-head"><span class="place-name">{p.name}</span><span class="mono place-years">{p.years}</span></span>
+              <span class="place-org">{p.org}</span>
+            </button>
+            <div class="place-body" hidden={i !== 0}>
+              <ul>{p.lines.map((l) => <li>{l}</li>)}</ul>
+              <a href={url(p.href)}>{p.href.startsWith('/work') ? 'Open case study' : 'More in About'}</a>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="scales" aria-labelledby="scales-title">
+      <h3 id="scales-title">The same question at six scales</h3>
+      <p class="muted">Sensor → planet → continent → country → landscape → site. The tools change; the logic (observe, model, decide) doesn't.</p>
+      <ol class="scale-list">
+        {scales.map((s, i) => (
+          <li style={`--i:${i}`}>
+            <a href={url(s.href)}>
+              <span class="scale-ring" aria-hidden="true"><i style={`--n:${6 - i}`}></i></span>
+              <span class="scale-k">{s.k}</span>
+              <span class="scale-what">{s.what}</span>
+              <span class="scale-ex mono">{s.ex}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .geo { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+  @media (min-width: 900px) { .geo { grid-template-columns: 1.4fr 1fr; } }
+  .geo-map { position: relative; min-height: 420px; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+  .geo-placeholder { position: absolute; left: 0.75rem; bottom: 0.6rem; font-size: var(--fs-xs); }
+  .geo-schematic { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .geo-schematic line { stroke: rgba(237,232,222,.06); } .geo-schematic circle { fill: var(--accent); } .geo-schematic text { font-family: var(--font-mono); font-size: 11px; fill: var(--text-2); } .geo-schematic .lbl { fill: var(--muted); font-size: 10px; }
+  .geo-map.is-live .geo-schematic, .geo-map.is-live .geo-placeholder { display: none; }
+  .geo-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; align-content: start; }
+  .place { width: 100%; text-align: left; padding: 0.85rem 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); display: grid; gap: 0.15rem; transition: border-color var(--t-micro) var(--ease); }
+  .place[aria-expanded="true"] { border-color: var(--accent); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .place-head { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+  .place-name { font-family: var(--font-display); font-weight: 600; }
+  .place-years { font-size: var(--fs-xs); color: var(--muted); }
+  .place-org { font-size: var(--fs-sm); color: var(--text-2); }
+  .place-body { border: 1px solid var(--accent); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); padding: 0.6rem 1rem 0.9rem; background: var(--surface); }
+  .place-body ul { margin: 0 0 0.6rem; padding-left: 1.1em; color: var(--text-2); font-size: var(--fs-sm); }
+  .place-body a { font-size: var(--fs-sm); }
+
+  .scales { margin-top: clamp(3rem, 6vw, 5rem); }
+  .scale-list { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+  .scale-list a { display: grid; gap: 0.5rem; padding: 1.25rem 1rem 1.25rem 0; text-decoration: none; color: inherit; border-right: 1px solid var(--line); margin-right: 1rem; height: 100%; }
+  .scale-list li:last-child a { border-right: 0; }
+  .scale-list a:hover .scale-k { color: var(--accent); }
+  .scale-ring { display: grid; place-items: center; width: 40px; height: 40px; }
+  .scale-ring i { display: block; border-radius: 50%; border: 1.5px solid var(--accent); width: calc(var(--n) * 6px); height: calc(var(--n) * 6px); opacity: .8; box-shadow: inset 0 0 0 1px rgba(46,196,182,.15); }
+  .scale-k { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-md); transition: color var(--t-micro) var(--ease); }
+  .scale-what { font-size: var(--fs-sm); color: var(--text-2); }
+  .scale-ex { font-size: var(--fs-xs); color: var(--muted); }
+  @media (max-width: 700px) { .scale-list { grid-template-columns: 1fr 1fr; } .scale-list a { border-right: 0; border-bottom: 1px solid var(--line); margin-right: 0; } }
+
+  /* Leaflet skin */
+  :global(.leaflet-container) { background: var(--bg-2); font-family: var(--font-body); }
+  :global(.leaflet-tile-pane) { filter: saturate(0.55) brightness(0.72) contrast(1.05); }
+  :global(.leaflet-control-attribution) { background: rgba(15,19,24,.7) !important; color: var(--muted) !important; font-size: 10px; }
+  :global(.leaflet-control-attribution a) { color: var(--text-2) !important; }
+  :global(.leaflet-bar a) { background: var(--surface) !important; color: var(--text) !important; border-color: var(--line) !important; }
+  :global(.pin) { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 4px rgba(46,196,182,.25); transition: box-shadow var(--t-ui) var(--ease); }
+  :global(.pin.is-active) { box-shadow: 0 0 0 10px rgba(46,196,182,.22); }
+  :global(.pin-label) { font-family: var(--font-mono); font-size: 11px; color: var(--text); white-space: nowrap; transform: translate(12px, -8px); text-shadow: 0 1px 2px #000; }
+</style>
+
+<script>
+  // Lazy: the map library (≈40 kB gz) only loads once the section is near the viewport.
+  const root = document.querySelector<HTMLElement>('[data-geo]');
+  if (root) {
+    const mapEl = root.querySelector<HTMLElement>('[data-geo-map]')!;
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-place]')];
+    let map: any = null; const markers = new Map<string, any>();
+
+    const select = (id: string, fly = true) => {
+      buttons.forEach((b) => {
+        const on = b.dataset.place === id; b.setAttribute('aria-expanded', String(on));
+        const body = b.nextElementSibling as HTMLElement; body.hidden = !on;
+      });
+      markers.forEach((m, k) => m.getElement()?.classList.toggle('is-active', k === id));
+      const b = buttons.find((x) => x.dataset.place === id);
+      if (map && b && fly) { const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; map.flyTo([Number(b.dataset.lat), Number(b.dataset.lon)], 7, { animate: !reduce, duration: 0.9 }); }
+    };
+    buttons.forEach((b) => b.addEventListener('click', () => select(b.dataset.place!)));
+
+    const load = () => new Promise<void>((res, rej) => {
+      const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.append(css);
+      const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'; s.onload = () => res(); s.onerror = () => rej(); document.head.append(s);
+    });
+    const init = async () => {
+      try { await load(); } catch { mapEl.querySelector('[data-geo-placeholder]')!.textContent = 'interactive map unavailable — schematic shown'; return; }
+      const L = (window as any).L; mapEl.classList.add('is-live');
+      map = L.map(mapEl, { zoomControl: true, scrollWheelZoom: false, attributionControl: true }).setView([46, -2], 4);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 13, attribution: 'Imagery &copy; Esri, Maxar, Earthstar Geographics, GIS User Community' }).addTo(map);
+      buttons.forEach((b) => {
+        const id = b.dataset.place!, name = b.querySelector('.place-name')!.textContent!.split(',')[0];
+        const icon = L.divIcon({ className: '', html: `<div class="pin"></div><div class="pin-label">${name}</div>`, iconSize: [14, 14], iconAnchor: [7, 7] });
+        const m = L.marker([Number(b.dataset.lat), Number(b.dataset.lon)], { icon, keyboard: false }).addTo(map);
+        m.on('click', () => select(id)); markers.set(id, m);
+      });
+      // Draw the Portugal ↔ Amsterdam trajectory as a faint line (real coordinates of the places above).
+      L.polyline([[40.207, -8.426], [41.15, -8.61], [41.93, -6.75], [52.334, 4.866], [40.537, -7.267], [39.82, -7.49]], { color: '#2ec4b6', weight: 1, opacity: 0.35, dashArray: '4 6' }).addTo(map);
+      select('amsterdam', false);
+    };
+    const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { io.disconnect(); init(); } }, { rootMargin: '300px' });
+    io.observe(mapEl);
+  }
+</script>

@@ -1,0 +1,48 @@
+---
+import { site } from '../config/site';
+import { url } from '../lib/url';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const is = (h: string) => path === base + h || (h !== '/' && path.startsWith(base + h));
+---
+<header class="nav" data-nav>
+  <div class="container nav-inner">
+    <a class="brand" href={url('/')} aria-label="Nuno Garcia — home">Nuno Garcia</a>
+    <nav aria-label="Primary">
+      <ul>
+        <li><a href={url('/work')} aria-current={is('/work') ? 'page' : undefined}>Work</a></li>
+        <li><a href={url('/research')} aria-current={is('/research') ? 'page' : undefined}>Research</a></li>
+        <li><a href={url('/about')} aria-current={is('/about') ? 'page' : undefined}>About</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-primary talk" href={url('/#contact')} data-track="Contact clicked" data-track-props='{"where":"nav"}'>Let's talk</a>
+    <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" data-burger><span></span><span></span></button>
+  </div>
+</header>
+<style>
+  .nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px); background: color-mix(in srgb, var(--bg) 80%, transparent); border-bottom: 1px solid transparent; transition: border-color var(--t-ui) var(--ease); }
+  .nav.is-scrolled { border-bottom-color: var(--line); }
+  .nav-inner { display: flex; align-items: center; gap: 2.5rem; padding-block: 1.1rem; transition: padding var(--t-ui) var(--ease); }
+  .nav.is-scrolled .nav-inner { padding-block: 0.7rem; }
+  .brand { text-decoration: none; font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+  nav ul { list-style: none; display: flex; gap: 1.75rem; margin: 0; padding: 0; }
+  nav a { text-decoration: none; color: var(--text-2); font-size: var(--fs-sm); font-weight: 500; padding-bottom: 2px; border-bottom: 1px solid transparent; }
+  nav a:hover { color: var(--text); } nav a[aria-current] { color: var(--text); border-bottom-color: var(--accent); }
+  .talk { margin-left: auto; }
+  .burger { display: none; width: 40px; height: 40px; flex-direction: column; justify-content: center; gap: 6px; align-items: center; }
+  .burger span { width: 20px; height: 2px; background: var(--text); transition: transform var(--t-micro) var(--ease); }
+  @media (max-width: 720px) {
+    nav { display: none; } .burger { display: flex; }
+    .nav.is-open nav { display: block; position: absolute; left: 0; right: 0; top: 100%; background: var(--bg); border-bottom: 1px solid var(--line); padding: 1rem var(--gutter) 1.5rem; }
+    .nav.is-open nav ul { flex-direction: column; gap: 1rem; } .nav.is-open nav a { font-size: var(--fs-md); }
+    .nav.is-open .burger span:first-child { transform: translateY(4px) rotate(45deg); } .nav.is-open .burger span:last-child { transform: translateY(-4px) rotate(-45deg); }
+    .nav-inner { gap: 1rem; } .talk { padding: 0.55rem 0.85rem; }
+  }
+</style>
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]')!;
+  const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 24);
+  onScroll(); addEventListener('scroll', onScroll, { passive: true });
+  const burger = nav.querySelector<HTMLButtonElement>('[data-burger]')!;
+  burger.addEventListener('click', () => { const open = nav.classList.toggle('is-open'); burger.setAttribute('aria-expanded', String(open)); });
+</script>

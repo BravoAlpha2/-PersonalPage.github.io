@@ -1,0 +1,89 @@
+---
+// Five capability systems. Tools are evidence; the capability is the product.
+const systems = [
+  { id: 'geo', name: 'Geospatial intelligence', outcome: 'Fragmented geographic data becomes operational maps, WebGIS and location intelligence.', tools: ['QGIS', 'ArcGIS', 'Google Earth Engine', 'Leaflet / WebGIS', 'Spatial analysis'] },
+  { id: 'eo', name: 'Earth observation', outcome: 'Satellite archives become monitoring: land cover, spectral indices, change over decades.', tools: ['Satellite time-series', 'Spectral indices', 'Remote sensing', 'MODIS / Landsat'] },
+  { id: 'model', name: 'Environmental modelling', outcome: 'Species, climate and land use become scenarios you can compare.', tools: ['Species distribution models', 'MaxEnt', 'CLUMondo', 'Climate & SSP scenarios'] },
+  { id: 'data', name: 'Data & pipelines', outcome: 'Analyses become reproducible tools and dashboards other people can run.', tools: ['R', 'R Shiny', 'SQL', 'Power BI', 'PowerApps'] },
+  { id: 'intel', name: 'Decision intelligence', outcome: 'Models become decisions: prediction, validation, automation, AI in the loop.', tools: ['AI evaluation', 'Scenario analysis', 'Decision support', 'Workflow automation'] },
+];
+// Constellation geometry (viewBox 800×420). Hubs on a gentle arc, tools around each.
+const hubs = [{ x: 120, y: 290 }, { x: 310, y: 130 }, { x: 500, y: 290 }, { x: 690, y: 130 }, { x: 880, y: 290 }];
+const orbit = (cx: number, cy: number, n: number, r = 88) => Array.from({ length: n }, (_, i) => { const a = -Math.PI / 2 + (i / n) * Math.PI * 2 + 0.4; return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * 0.7 }; });
+---
+<section class="section" id="capabilities" aria-labelledby="cap-title">
+  <div class="container">
+    <header class="section-head">
+      <span class="index">Capabilities</span>
+      <h2 id="cap-title">Five systems, not fifty logos</h2>
+      <p class="lede">Each capability is described by the outcome it produces. The tools underneath are evidence that it works.</p>
+    </header>
+
+    <div class="cap-layout">
+      <svg class="constellation" viewBox="0 0 1000 440" role="img" aria-label="Capability constellation: five capability hubs connected to the tools that support them" data-constellation>
+        <defs><filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        {hubs.slice(0, -1).map((h, i) => <line class="link link-hub" x1={h.x} y1={h.y} x2={hubs[i + 1].x} y2={hubs[i + 1].y} />)}
+        {systems.map((s, i) => {
+          const h = hubs[i]; const o = orbit(h.x, h.y, s.tools.length);
+          return (
+            <g class="sys" data-sys={s.id}>
+              {o.map((p) => <line class="link" x1={h.x} y1={h.y} x2={p.x} y2={p.y} />)}
+              {o.map((p, j) => <g class="tool"><circle cx={p.x} cy={p.y} r="3" /><text x={p.x} y={p.y - 8} text-anchor="middle">{s.tools[j]}</text></g>)}
+              <circle class="hub" cx={h.x} cy={h.y} r="9" filter="url(#glow)" />
+              <text class="hub-label" x={h.x} y={h.y - 22} text-anchor="middle">{s.name}</text>
+            </g>
+          );
+        })}
+      </svg>
+
+      <ul class="cap-list">
+        {systems.map((s, i) => (
+          <li>
+            <button type="button" class="cap" data-cap={s.id} aria-expanded={i === 0 ? 'true' : 'false'}>
+              <span class="cap-name">{s.name}</span>
+              <span class="cap-outcome">{s.outcome}</span>
+            </button>
+            <ul class="chips cap-tools" hidden={i !== 0}>{s.tools.map((t) => <li class="chip">{t}</li>)}</ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+<style>
+  .cap-layout { display: grid; gap: 2rem; }
+  @media (min-width: 1000px) { .cap-layout { grid-template-columns: 1.3fr 1fr; align-items: start; } }
+  .constellation { width: 100%; height: auto; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  .link { stroke: rgba(237,232,222,.12); stroke-width: 1; transition: stroke var(--t-ui) var(--ease); }
+  .link-hub { stroke: rgba(46,196,182,.25); stroke-dasharray: 3 6; }
+  .hub { fill: var(--accent); transition: r var(--t-ui) var(--ease); }
+  .hub-label { font-family: var(--font-display); font-size: 15px; font-weight: 600; fill: var(--text); }
+  .tool circle { fill: var(--muted); transition: fill var(--t-ui) var(--ease); }
+  .tool text { font-family: var(--font-mono); font-size: 11px; fill: var(--muted); transition: fill var(--t-ui) var(--ease); }
+  .sys.is-on .link { stroke: rgba(46,196,182,.6); }
+  .sys.is-on .tool circle { fill: var(--accent); }
+  .sys.is-on .tool text { fill: var(--text); }
+  .sys.is-on .hub { r: 12; }
+  .sys.is-dim { opacity: .6; }
+  .cap-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  .cap { width: 100%; text-align: left; display: grid; gap: 0.25rem; padding: 0.9rem 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); transition: border-color var(--t-micro) var(--ease); }
+  .cap[aria-expanded="true"] { border-color: var(--accent); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .cap-name { font-family: var(--font-display); font-weight: 600; }
+  .cap-outcome { font-size: var(--fs-sm); color: var(--text-2); }
+  .cap-tools { padding: 0.6rem 1rem 0.9rem; border: 1px solid var(--accent); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); background: var(--surface); }
+  @media (max-width: 600px) { .constellation { display: none; } }
+</style>
+<script>
+  const root = document.querySelector('[data-constellation]');
+  if (root) {
+    const groups = [...root.querySelectorAll<SVGGElement>('[data-sys]')];
+    const caps = [...document.querySelectorAll<HTMLButtonElement>('[data-cap]')];
+    const set = (id: string | null) => {
+      groups.forEach((g) => { g.classList.toggle('is-on', g.dataset.sys === id); g.classList.toggle('is-dim', !!id && g.dataset.sys !== id); });
+      caps.forEach((c) => { const on = c.dataset.cap === id; c.setAttribute('aria-expanded', String(on)); (c.nextElementSibling as HTMLElement).hidden = !on; });
+    };
+    caps.forEach((c) => c.addEventListener('click', () => set(c.dataset.cap!)));
+    groups.forEach((g) => { g.addEventListener('mouseenter', () => set(g.dataset.sys!)); g.style.cursor = 'pointer'; g.addEventListener('click', () => set(g.dataset.sys!)); });
+    set('geo');
+  }
+</script>

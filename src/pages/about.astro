@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro';
+import HowIThink from '../components/HowIThink.astro';
+import Experience from '../components/Experience.astro';
+import Capabilities from '../components/Capabilities.astro';
+import { url } from '../lib/url';
+import { site } from '../config/site';
+
+const education = [
+  { school: 'ISCTE Executive Education', degree: 'Postgraduate, Business Management', when: '2026' },
+  { school: 'University of Porto', degree: 'MSc, Environmental Sciences and Technology — 18/20', when: '2021 – 2023' },
+  { school: 'University of Coimbra', degree: 'BSc, Biology', when: '2018 – 2021' },
+];
+const certs = [
+  { by: 'NASA ARSET', what: 'Spectral indices with QGIS · Satellite data for air quality · Citizen science & remote sensing', when: '2023 – 2025' },
+  { by: 'Google', what: 'Data Analytics certificate', when: '2023' },
+  { by: 'Esri Portugal', what: 'EUE 2022 & 2025 user conferences', when: '2022 · 2025' },
+  { by: 'Universidade do Minho', what: 'Database programming with SQL', when: '2025' },
+  { by: 'KI-Campus', what: 'Methods of AI — Intelligent Agents · AI & Entrepreneurship', when: '2025' },
+];
+---
+<Base title="About — Nuno Garcia" description="Biologist turned geospatial data scientist. How I think, where I've worked, what I can do, and the education and certifications behind it.">
+  <section class="section">
+    <div class="container about">
+      <figure class="portrait">
+        <img src={url('/images/nuno-garcia.webp')} alt="Nuno Garcia" width="400" height="400" loading="eager" decoding="async" />
+        <figcaption class="mono muted">{site.location} · 39.82° N · 7.49° W</figcaption>
+      </figure>
+      <div>
+        <span class="index mono">About</span>
+        <h1>A biologist who learned to build decision tools.</h1>
+        <p class="lede">I started wanting to know where species live. That became modelling why they are there, forecasting where they will be, and — eventually — building the tools a manager needs to act on it.</p>
+        <p>The through-line is decision quality. A species distribution model, a satellite time-series, a forestry dashboard and an AI evaluation are the same job: take a messy system, find the relationships that hold, and give someone a clearer choice than they had before.</p>
+        <p>Based in {site.location}, working across Portugal and Europe, in Portuguese and English. Outside work: food and the outdoors, in roughly that order.</p>
+        <dl class="edu">
+          {education.map((e) => <div><dt class="mono muted">{e.when}</dt><dd><strong>{e.degree}</strong><span>{e.school}</span></dd></div>)}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <HowIThink />
+  <Experience />
+  <Capabilities />
+
+  <section class="section">
+    <div class="container">
+      <header class="section-head"><span class="index">Certifications</span><h2>Earth observation, data and AI — the ones that matter</h2></header>
+      <ul class="certs">
+        {certs.map((c) => <li><span class="by">{c.by}</span><span>{c.what}</span><span class="mono muted">{c.when}</span></li>)}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .about { display: grid; gap: 2.5rem; align-items: start; }
+  @media (min-width: 860px) { .about { grid-template-columns: 300px 1fr; gap: 4rem; } .portrait { position: sticky; top: 6rem; } }
+  .index { color: var(--accent); display: block; margin-bottom: 1rem; }
+  h1 { font-size: clamp(2rem, 4.5vw, 3.2rem); max-width: 16ch; }
+  .about p { color: var(--text-2); }
+  .portrait { margin: 0; max-width: 300px; }
+  .portrait img { width: 100%; height: auto; border-radius: var(--radius-lg); border: 1px solid var(--line); }
+  .portrait figcaption { margin-top: 0.6rem; font-size: var(--fs-xs); }
+  .edu { margin: 2rem 0 0; display: grid; gap: 0.75rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+  .edu div { display: grid; grid-template-columns: 110px 1fr; gap: 1rem; font-size: var(--fs-sm); }
+  .edu dt { font-size: var(--fs-xs); padding-top: 0.2em; } .edu dd { margin: 0; display: grid; } .edu dd span { color: var(--muted); }
+  .certs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .certs li { display: grid; grid-template-columns: 1fr; gap: 0.15rem 1.5rem; padding: 0.9rem 0; border-bottom: 1px solid var(--line); font-size: var(--fs-sm); }
+  @media (min-width: 700px) { .certs li { grid-template-columns: 200px 1fr auto; } }
+  .by { font-weight: 600; font-family: var(--font-display); }
+</style>
